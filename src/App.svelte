@@ -2,8 +2,9 @@
   export let name;
   let fields = {firstName: '', lastName: '', email: '', login: '', date: '', password: '', repeatPassword: ''};
   let errors = {firstName: '', lastName: '', email: '', login: '', date: '', password: '', repeatPassword: ''};
-  let formMessage = 'none';
+  let formMessage = '';
   let valid = false;
+  let res = '';
 
   const reName = /^[a-zA-Z\u00C0-\u00ff]+$/;
   const reEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -13,13 +14,9 @@
   const limitChars = 6;
   const dayToday = new Date().toISOString().split('T')[0];
 
-  let currentAge = ((new Date(dayToday).getTime() - new Date(fields.date).getTime()) / 1000 / 60 / 60 / 24);
-  currentAge = Math.round(currentAge / 365);
-  
-  console.log('-----------------');
-  console.log('dayToday', dayToday);
-  console.log('currentAge: ', currentAge);
-  console.log('-----------------');
+  let currentAge = new Date(dayToday).getTime() - new Date(fields.date).getTime();
+  // / 1000 / 60 / 60 / 24;
+  // currentAge = Math.round(currentAge / 365);
 
   function handleSubmit() {
     valid = true;
@@ -30,11 +27,17 @@
     loginHandler();
     dateHandler();
     passwordHandler();
-    // repeatPasswordHandler();
+    repeatPasswordHandler();
+
+    console.log('-----------------');
+    console.log('dayToday: ', dayToday);
+    console.log('currtAge: ', currentAge);
+    console.log('-----------------');
 
     if (valid) {
       console.log('valid', fields);
       formMessage = 'form is valid!'
+      res = JSON.stringify(fields,undefined, 2);
     } else {
       console.log('not valid');
       formMessage = 'form not valid =('
@@ -106,8 +109,6 @@
     } else {
       errors.date = '';
     }
-    console.log(currentAge);
-    console.log(ageLimit);
   }
 
   function passwordHandler() {
@@ -127,11 +128,11 @@
     }
   }
 
-  // function repeatPasswordHandler() {
+  function repeatPasswordHandler() {
     if (!fields.repeatPassword.length) {
       valid = false;
       errors.repeatPassword = 'repeat password!';
-    } else if (fields.password === fields.repeatPassword) {
+    } else if (fields.password !== fields.repeatPassword) {
       valid = false;
       errors.repeatPassword = 'Not correct!'
     } else {
@@ -143,15 +144,15 @@
     } else {
       console.log('not valid');
     }
-  // }
+  }
+
 </script>
 
 <main>
   <h1>Hello {name}!</h1>
-
   <form on:submit|preventDefault={handleSubmit}>
     <label>
-      First Ndfdame:
+      First Name:
       <input
         bind:value={fields.firstName}
         on:input={(e)=>fields.firstName=e.target.value}
@@ -216,7 +217,7 @@
     </label>
     <div class="errors">{errors.password}</div>
 
-    <!-- <label>
+    <label>
       Repeat Password:
       <input
         bind:value={fields.repeatPassword}
@@ -225,13 +226,18 @@
         placeholder="qwerty123"
       />
     </label>
-    <div class="errors">{errors.repeatPassword}</div> -->
+    <div class="errors">{errors.repeatPassword}</div>
 
     <button type="submit">submit</button>
     <div>{formMessage}</div>
   </form>
-</main>
 
+  <div class='result'>
+    <pre>
+      {res}
+    </pre>
+  </div>
+</main>
 
 <style>
   main {
@@ -286,6 +292,7 @@
     font-size: 12px;
     transition: all ease-in-out 0.4s;
     text-transform: uppercase;
+    margin-top: 20px;
   }
 
   button:hover {
@@ -300,9 +307,17 @@
   font-weight: bold;
 }
 
+.result {
+		width: 300px;
+    text-align: left;
+    margin: 0 auto;
+	}
+
   @media (min-width: 640px) {
     main {
       max-width: none;
     }
   }
+
+
 </style>
