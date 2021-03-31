@@ -12,11 +12,6 @@
   const reLogin = /^[0-9a-zA-Z]+$/;
   const rePassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/;
   const limitChars = 6;
-  const dayToday = new Date().toISOString().split('T')[0];
-
-  let currentAge = new Date(dayToday).getTime() - new Date(fields.date).getTime();
-  // / 1000 / 60 / 60 / 24;
-  // currentAge = Math.round(currentAge / 365);
 
   function handleSubmit() {
     valid = true;
@@ -28,11 +23,6 @@
     dateHandler();
     passwordHandler();
     repeatPasswordHandler();
-
-    console.log('-----------------');
-    console.log('dayToday: ', dayToday);
-    console.log('currtAge: ', currentAge);
-    console.log('-----------------');
 
     if (valid) {
       console.log('valid', fields);
@@ -100,6 +90,13 @@
   }
 
   function dateHandler() {
+    const dayToday = new Date().toISOString().split('T')[0];
+    let currentAge = Math.round(((new Date(dayToday).getTime() - new Date(fields.date).getTime()) / 1000 / 60 / 60 / 24) / 365);
+
+    console.log('-----------------');
+    console.log('currtAge: ', currentAge);
+    console.log('-----------------');
+
     if (!fields.date.length) {
       valid = false;
       errors.date = 'Date cant be empty!';
@@ -199,7 +196,10 @@
       Date:
       <input
         bind:value={fields.date}
-        on:input={(e)=>fields.date=e.target.value}
+        on:input={(e)=>{
+          fields.date=e.target.value;
+          console.log(fields.date);
+        }}
         on:blur={(e) => dateHandler(e)}
         type='date'
       />
@@ -212,6 +212,7 @@
         bind:value={fields.password}
         on:input={(e)=>fields.password=e.target.value}
         on:blur={(e) => passwordHandler(e)}
+        type='password'
         placeholder="qwerty123"
       />
     </label>
@@ -223,6 +224,7 @@
         bind:value={fields.repeatPassword}
         on:input={(e)=>fields.repeatPassword=e.target.value}
         on:blur={(e) => repeatPasswordHandler(e)}
+        type='password'
         placeholder="qwerty123"
       />
     </label>
@@ -308,7 +310,7 @@
 }
 
 .result {
-		width: 300px;
+		width: 200px;
     text-align: left;
     margin: 0 auto;
 	}
